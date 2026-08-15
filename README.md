@@ -1,15 +1,20 @@
-# Pokémon Ruby and Sapphire [![Build Status][travis-badge]][travis]
+# Pokemon Sapphire ROM
 
-This is a disassembly of Pokémon Ruby and Sapphire.
+This repository contains a GBA ROM hack built from the `pokeruby` decompilation base.
 
-It builds the following roms:
+It currently includes:
 
-* pokeruby.gba `sha1: f28b6ffc97847e94a6c21a63cacf633ee5c8df1e`
-* pokesapphire.gba `sha1: 3ccbbd45f8553c36463f13b938e833f652b793e4`
+- A global difficulty system with `Easy`, `Medium`, and `Hard`
+- A follower Pokemon system for supported overworld sprites
+- Map, menu, battle, save, and encounter updates needed to support those features
+- A detailed changelog in [ROM_HACK_README.md](ROM_HACK_README.md)
 
-To set up the repository, see [INSTALL.md](INSTALL.md).
+## Build
 
-For contacts and other pret projects, see [pret.github.io](https://pret.github.io/).
+For setup and toolchain requirements, see [INSTALL.md](INSTALL.md).
 
-[travis]: https://travis-ci.org/pret/pokeruby
-[travis-badge]: https://travis-ci.org/pret/pokeruby.svg?branch=master
+## Notes
+
+- `pokeruby` is the active game source tree.
+- `pokeheartgold` is only used as a reference for behavior and structure.
+- Build outputs are not tracked in Git.
