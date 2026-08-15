@@ -16,6 +16,7 @@
 #include "battle_util.h"
 #include "data2.h"
 #include "decompress.h"
+#include "difficulty.h"
 #include "event_data.h"
 #include "evolution_scene.h"
 #include "item.h"
@@ -1076,23 +1077,31 @@ u8 CreateNPCTrainerParty(struct Pokemon *party, u16 trainerNum)
             case 0:
             {
                 const struct TrainerMonNoItemDefaultMoves *partyData = gTrainers[trainerNum].party.NoItemDefaultMoves;
+                u16 heldItem;
 
                 for (j = 0; gSpeciesNames[partyData[i].species][j] != 0xFF; j++)
                     nameHash += gSpeciesNames[partyData[i].species][j];
                 personalityValue += nameHash << 8;
-                fixedIV = partyData[i].iv * 31 / 255;
-                CreateMon(&party[i], partyData[i].species, partyData[i].level, fixedIV, TRUE, personalityValue, 2, 0);
+                fixedIV = Difficulty_AdjustTrainerFixedIV(partyData[i].iv * 31 / 255);
+                CreateMon(&party[i], partyData[i].species, Difficulty_AdjustTrainerLevel(partyData[i].level), fixedIV, TRUE, personalityValue, 2, 0);
+                heldItem = Difficulty_GetTrainerHeldItem(partyData[i].species, ITEM_NONE);
+                if (heldItem != ITEM_NONE)
+                    SetMonData(&party[i], MON_DATA_HELD_ITEM, &heldItem);
                 break;
             }
             case F_TRAINER_PARTY_CUSTOM_MOVESET:
             {
                 const struct TrainerMonNoItemCustomMoves *partyData = gTrainers[trainerNum].party.NoItemCustomMoves;
+                u16 heldItem;
 
                 for (j = 0; gSpeciesNames[partyData[i].species][j] != 0xFF; j++)
                     nameHash += gSpeciesNames[partyData[i].species][j];
                 personalityValue += nameHash << 8;
-                fixedIV = partyData[i].iv * 31 / 255;
-                CreateMon(&party[i], partyData[i].species, partyData[i].level, fixedIV, TRUE, personalityValue, 2, 0);
+                fixedIV = Difficulty_AdjustTrainerFixedIV(partyData[i].iv * 31 / 255);
+                CreateMon(&party[i], partyData[i].species, Difficulty_AdjustTrainerLevel(partyData[i].level), fixedIV, TRUE, personalityValue, 2, 0);
+                heldItem = Difficulty_GetTrainerHeldItem(partyData[i].species, ITEM_NONE);
+                if (heldItem != ITEM_NONE)
+                    SetMonData(&party[i], MON_DATA_HELD_ITEM, &heldItem);
 
                 for (j = 0; j < 4; j++)
                 {
@@ -1104,27 +1113,31 @@ u8 CreateNPCTrainerParty(struct Pokemon *party, u16 trainerNum)
             case F_TRAINER_PARTY_HELD_ITEM:
             {
                 const struct TrainerMonItemDefaultMoves *partyData = gTrainers[trainerNum].party.ItemDefaultMoves;
+                u16 heldItem;
 
                 for (j = 0; gSpeciesNames[partyData[i].species][j] != 0xFF; j++)
                     nameHash += gSpeciesNames[partyData[i].species][j];
                 personalityValue += nameHash << 8;
-                fixedIV = partyData[i].iv * 31 / 255;
-                CreateMon(&party[i], partyData[i].species, partyData[i].level, fixedIV, TRUE, personalityValue, 2, 0);
+                fixedIV = Difficulty_AdjustTrainerFixedIV(partyData[i].iv * 31 / 255);
+                CreateMon(&party[i], partyData[i].species, Difficulty_AdjustTrainerLevel(partyData[i].level), fixedIV, TRUE, personalityValue, 2, 0);
 
-                SetMonData(&party[i], MON_DATA_HELD_ITEM, &partyData[i].heldItem);
+                heldItem = Difficulty_GetTrainerHeldItem(partyData[i].species, partyData[i].heldItem);
+                SetMonData(&party[i], MON_DATA_HELD_ITEM, &heldItem);
                 break;
             }
             case F_TRAINER_PARTY_CUSTOM_MOVESET | F_TRAINER_PARTY_HELD_ITEM:
             {
                 const struct TrainerMonItemCustomMoves *partyData = gTrainers[trainerNum].party.ItemCustomMoves;
+                u16 heldItem;
 
                 for (j = 0; gSpeciesNames[partyData[i].species][j] != 0xFF; j++)
                     nameHash += gSpeciesNames[partyData[i].species][j];
                 personalityValue += nameHash << 8;
-                fixedIV = partyData[i].iv * 31 / 255;
-                CreateMon(&party[i], partyData[i].species, partyData[i].level, fixedIV, TRUE, personalityValue, 2, 0);
+                fixedIV = Difficulty_AdjustTrainerFixedIV(partyData[i].iv * 31 / 255);
+                CreateMon(&party[i], partyData[i].species, Difficulty_AdjustTrainerLevel(partyData[i].level), fixedIV, TRUE, personalityValue, 2, 0);
 
-                SetMonData(&party[i], MON_DATA_HELD_ITEM, &partyData[i].heldItem);
+                heldItem = Difficulty_GetTrainerHeldItem(partyData[i].species, partyData[i].heldItem);
+                SetMonData(&party[i], MON_DATA_HELD_ITEM, &heldItem);
                 for (j = 0; j < 4; j++)
                 {
                     SetMonData(&party[i], MON_DATA_MOVE1 + j, &partyData[i].moves[j]);

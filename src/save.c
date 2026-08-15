@@ -1,4 +1,5 @@
 #include "global.h"
+#include "difficulty.h"
 #include "gba/gba.h"
 #include "gba/flash_internal.h"
 #include "save.h"
@@ -842,10 +843,11 @@ u8 Save_LoadGameData(u8 saveType)
     {
     case SAVE_NORMAL:
     default:
-        result = sub_812587C(0xFFFF, sSaveBlockChunks);
-        LoadSerializedGame();
-        gSaveFileStatus = result;
-        gGameContinueCallback = 0;
+    result = sub_812587C(0xFFFF, sSaveBlockChunks);
+    LoadSerializedGame();
+    Difficulty_SanitizeSaveData();
+    gSaveFileStatus = result;
+    gGameContinueCallback = 0;
         break;
     case SAVE_HALL_OF_FAME:
         result = ReadSomeUnknownSectorAndVerify(HALL_OF_FAME_SECTOR, sHallOfFameChunks[0].data, sHallOfFameChunks[0].size);

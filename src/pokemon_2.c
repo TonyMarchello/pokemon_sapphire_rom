@@ -1,4 +1,5 @@
 #include "global.h"
+#include "difficulty.h"
 #include "constants/hold_effects.h"
 #include "constants/moves.h"
 #include "battle.h"
@@ -1081,17 +1082,22 @@ void CreateSecretBaseEnemyParty(struct SecretBaseRecord *secretBaseRecord)
     {
         if (eSecretBaseRecord->party.species[i])
         {
+            u16 heldItem = Difficulty_GetTrainerHeldItem(
+                eSecretBaseRecord->party.species[i],
+                eSecretBaseRecord->party.heldItems[i]);
+            u8 fixedIV = Difficulty_AdjustTrainerFixedIV(15);
+
             CreateMon(&gEnemyParty[i],
                 eSecretBaseRecord->party.species[i],
-                eSecretBaseRecord->party.levels[i],
-                15,
+                Difficulty_AdjustTrainerLevel(eSecretBaseRecord->party.levels[i]),
+                fixedIV,
                 1,
                 eSecretBaseRecord->party.personality[i],
                 2,
                 0);
 
-            // these two SetMonData calls require the (u8 *) cast since SetMonData is declared in this function.
-            SetMonData(&gEnemyParty[i], MON_DATA_HELD_ITEM, (u8 *)&eSecretBaseRecord->party.heldItems[i]);
+            // These SetMonData calls require the (u8 *) cast since SetMonData is declared in this function.
+            SetMonData(&gEnemyParty[i], MON_DATA_HELD_ITEM, (u8 *)&heldItem);
 
             for (j = 0; j < 6; j++)
                 SetMonData(&gEnemyParty[i], MON_DATA_HP_EV + j, &eSecretBaseRecord->party.EVs[i]);

@@ -25,6 +25,7 @@ const u8 gSystemText_Pokemon2[] = _("POKéMON");
 // main menu text
 const u8 gMainMenuString_NewGame[] = _("NEW GAME");
 const u8 gMainMenuString_Continue[] = _("CONTINUE");
+const u8 gMainMenuString_Difficulty[] = _("DIFFICULTY");
 const u8 gMainMenuString_Option[] = _("OPTION");
 const u8 gMainMenuString_MysteryEvents[] = _("MYSTERY EVENTS");
 
@@ -52,6 +53,12 @@ const u8 gMainMenuString_Badges[] = _("BADGES");
 const u8 gBirchText_Boy[] = _("BOY");
 const u8 gBirchText_Girl[] = _("GIRL");
 const u8 gBirchText_NewName[] = _("NEW NAME");
+
+// difficulty text
+const u8 gDifficultyMenuString_Title[] = _("SELECT DIFFICULTY");
+const u8 gDifficultyMenuString_Easy[] = _("EASY");
+const u8 gDifficultyMenuString_Medium[] = _("MEDIUM");
+const u8 gDifficultyMenuString_Hard[] = _("HARD");
 
 #ifdef SAPPHIRE
 const u8 gDefaultBoyName1[] = _("SEAN");
@@ -953,6 +960,7 @@ const u8 gSystemText_Pokemon2[] = _("POKéMON");
 // main menu text
 const u8 gMainMenuString_NewGame[] = _("NEUES SPIEL");
 const u8 gMainMenuString_Continue[] = _("WEITER");
+const u8 gMainMenuString_Difficulty[] = _("SCHWIERIGKEIT");
 const u8 gMainMenuString_Option[] = _("OPTIONEN");
 const u8 gMainMenuString_MysteryEvents[] = _("GEHEIMGESCHEHEN");
 
@@ -980,6 +988,12 @@ const u8 gMainMenuString_Badges[] = _("ORDEN");
 const u8 gBirchText_Boy[] = _("JUNGE");
 const u8 gBirchText_Girl[] = _("MÄDEL");
 const u8 gBirchText_NewName[] = _("NEUER NAME");
+
+// difficulty text
+const u8 gDifficultyMenuString_Title[] = _("SCHWIERIGKEIT WÄHLEN");
+const u8 gDifficultyMenuString_Easy[] = _("EINFACH");
+const u8 gDifficultyMenuString_Medium[] = _("NORMAL");
+const u8 gDifficultyMenuString_Hard[] = _("SCHWER");
 
 #ifdef SAPPHIRE
 const u8 gDefaultBoyName1[] = _("SEBOLD");

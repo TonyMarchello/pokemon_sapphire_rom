@@ -4,6 +4,7 @@
 #include "main_menu.h"
 #include "data2.h"
 #include "decompress.h"
+#include "difficulty.h"
 #include "event_data.h"
 #include "field_effect.h"
 #include "menu.h"
@@ -44,14 +45,15 @@ extern struct SpriteTemplate gCreatingSpriteTemplate;
 //Menu layouts
 enum
 {
-    HAS_NO_SAVED_GAME,  //NEW GAME, OPTION
-    HAS_SAVED_GAME,     //CONTINUE, NEW GAME, OPTION
-    HAS_MYSTERY_EVENT,  //CONTINUE, NEW GAME, MYSTERY EVENTS, OPTION
+    HAS_NO_SAVED_GAME,  //NEW GAME, DIFFICULTY, OPTION
+    HAS_SAVED_GAME,     //CONTINUE, NEW GAME, DIFFICULTY, OPTION
+    HAS_MYSTERY_EVENT,  //CONTINUE, NEW GAME, DIFFICULTY, MYSTERY EVENTS, OPTION
 };
 
 static void CB2_MainMenu(void);
 static void VBlankCB_MainMenu(void);
 static void CB2_InitMainMenuFromOptions(void);
+void CB2_InitDifficultyMenu(void);
 static u32 InitMainMenu(bool8 a1);
 static void Task_MainMenuCheckSave(u8 taskId);
 static void Task_MainMenuWaitForSaveErrorAck(u8 taskId);
@@ -65,11 +67,9 @@ static void Task_MainMenuPressedA(u8 taskId);
 static void Task_MainMenuPressedB(u8 taskId);
 static void HighlightCurrentMenuItem(u8 layout, u8 menuItem);
 static void PrintMainMenuItem(const u8 *text, u8 left, u8 top);
-static void PrintSaveFileInfo(void);
-static void PrintPlayerName(void);
-static void PrintPlayTime(void);
-static void PrintPokedexCount(void);
-static void PrintBadgeCount(void);
+static void Task_DifficultyMenuDraw(u8 taskId);
+static void Task_DifficultyMenuProcessInput(u8 taskId);
+static void Task_DifficultyMenuFadeOut(u8 taskId);
 static void Task_NewGameSpeech1(u8 taskId);
 static void Task_NewGameSpeech2(u8 taskId);
 static void Task_NewGameSpeech3(u8 taskId);
@@ -166,6 +166,13 @@ static const struct MenuAction gFemalePresetNames[] =
     {gDefaultGirlName2, NULL},
     {gDefaultGirlName3, NULL},
     {gDefaultGirlName4, NULL},
+};
+
+static const struct MenuAction sDifficultyMenuActions[] =
+{
+    {gDifficultyMenuString_Easy, NULL},
+    {gDifficultyMenuString_Medium, NULL},
+    {gDifficultyMenuString_Hard, NULL},
 };
 
 static void CB2_MainMenu(void)
@@ -402,30 +409,34 @@ void Task_MainMenuDraw(u8 taskId)
         {
         case HAS_NO_SAVED_GAME:
         default:
-            Menu_DrawStdWindowFrame(1, 0, 28, 3);
+            Menu_DrawStdWindowFrame(1, 0, 28, 2);
             PrintMainMenuItem(gMainMenuString_NewGame, 2, 1);
-            Menu_DrawStdWindowFrame(1, 4, 28, 7);
-            PrintMainMenuItem(gMainMenuString_Option, 2, 5);
+            Menu_DrawStdWindowFrame(1, 3, 28, 5);
+            PrintMainMenuItem(gMainMenuString_Difficulty, 2, 4);
+            Menu_DrawStdWindowFrame(1, 6, 28, 8);
+            PrintMainMenuItem(gMainMenuString_Option, 2, 7);
             break;
         case HAS_SAVED_GAME:
-            Menu_DrawStdWindowFrame(1, 0, 28, 7);
+            Menu_DrawStdWindowFrame(1, 0, 28, 2);
             PrintMainMenuItem(gMainMenuString_Continue, 2, 1);
-            Menu_DrawStdWindowFrame(1, 8, 28, 11);
-            PrintMainMenuItem(gMainMenuString_NewGame, 2, 9);
-            Menu_DrawStdWindowFrame(1, 12, 28, 15);
-            PrintMainMenuItem(gMainMenuString_Option, 2, 13);
-            PrintSaveFileInfo();
+            Menu_DrawStdWindowFrame(1, 3, 28, 5);
+            PrintMainMenuItem(gMainMenuString_NewGame, 2, 4);
+            Menu_DrawStdWindowFrame(1, 6, 28, 8);
+            PrintMainMenuItem(gMainMenuString_Difficulty, 2, 7);
+            Menu_DrawStdWindowFrame(1, 9, 28, 11);
+            PrintMainMenuItem(gMainMenuString_Option, 2, 10);
             break;
         case HAS_MYSTERY_EVENT:
-            Menu_DrawStdWindowFrame(1, 0, 28, 7);
+            Menu_DrawStdWindowFrame(1, 0, 28, 2);
             PrintMainMenuItem(gMainMenuString_Continue, 2, 1);
-            Menu_DrawStdWindowFrame(1, 8, 28, 11);
-            PrintMainMenuItem(gMainMenuString_NewGame, 2, 9);
-            Menu_DrawStdWindowFrame(1, 12, 28, 15);
-            PrintMainMenuItem(gMainMenuString_MysteryEvents, 2, 13);
-            Menu_DrawStdWindowFrame(1, 16, 28, 19);
-            PrintMainMenuItem(gMainMenuString_Option, 2, 0x11);
-            PrintSaveFileInfo();
+            Menu_DrawStdWindowFrame(1, 3, 28, 5);
+            PrintMainMenuItem(gMainMenuString_NewGame, 2, 4);
+            Menu_DrawStdWindowFrame(1, 6, 28, 8);
+            PrintMainMenuItem(gMainMenuString_Difficulty, 2, 7);
+            Menu_DrawStdWindowFrame(1, 9, 28, 11);
+            PrintMainMenuItem(gMainMenuString_MysteryEvents, 2, 10);
+            Menu_DrawStdWindowFrame(1, 12, 28, 14);
+            PrintMainMenuItem(gMainMenuString_Option, 2, 13);
             break;
         }
 
@@ -463,13 +474,13 @@ bool8 MainMenuProcessKeyInput(u8 taskId)
         {
         case HAS_NO_SAVED_GAME:
         default:
-            menuItemCount = 2;
-            break;
-        case HAS_SAVED_GAME:
             menuItemCount = 3;
             break;
-        case HAS_MYSTERY_EVENT:
+        case HAS_SAVED_GAME:
             menuItemCount = 4;
+            break;
+        case HAS_MYSTERY_EVENT:
+            menuItemCount = 5;
             break;
         }
 
@@ -507,6 +518,7 @@ void Task_MainMenuPressedA(u8 taskId)
     {
         NEW_GAME,
         CONTINUE,
+        DIFFICULTY,
         OPTION,
         MYSTERY_EVENTS,
     } action;
@@ -525,6 +537,9 @@ void Task_MainMenuPressedA(u8 taskId)
             action = NEW_GAME;
             break;
         case 1:
+            action = DIFFICULTY;
+            break;
+        case 2:
             action = OPTION;
             break;
         }
@@ -540,6 +555,9 @@ void Task_MainMenuPressedA(u8 taskId)
             action = NEW_GAME;
             break;
         case 2:
+            action = DIFFICULTY;
+            break;
+        case 3:
             action = OPTION;
             break;
         }
@@ -555,9 +573,12 @@ void Task_MainMenuPressedA(u8 taskId)
             action = NEW_GAME;
             break;
         case 2:
-            action = MYSTERY_EVENTS;
+            action = DIFFICULTY;
             break;
         case 3:
+            action = MYSTERY_EVENTS;
+            break;
+        case 4:
             action = OPTION;
             break;
         }
@@ -583,6 +604,11 @@ void Task_MainMenuPressedA(u8 taskId)
         SetMainCallback2(CB2_InitOptionMenu);
         DestroyTask(taskId);
         break;
+    case DIFFICULTY:
+        gMain.savedCallback = CB2_InitMainMenu;
+        SetMainCallback2(CB2_InitDifficultyMenu);
+        DestroyTask(taskId);
+        break;
     case MYSTERY_EVENTS:
         SetMainCallback2(CB2_InitMysteryEventMenu);
         DestroyTask(taskId);
@@ -595,6 +621,97 @@ void Task_MainMenuPressedB(u8 taskId)
     if (!gPaletteFade.active)
     {
         SetMainCallback2(CB2_InitTitleScreen);
+        DestroyTask(taskId);
+    }
+}
+
+void CB2_InitDifficultyMenu(void)
+{
+    u8 taskId;
+
+    if (gMain.savedCallback == NULL)
+        gMain.savedCallback = CB2_InitMainMenu;
+
+    SetVBlankCallback(VBlankCB_MainMenu);
+    ResetTasks();
+    ResetSpriteData();
+    FreeAllSpritePalettes();
+    Text_LoadWindowTemplate(&gWindowTemplate_81E6C3C);
+    InitMenuWindow((struct WindowTemplate *)&gMenuTextWindowTemplate);
+    Menu_EraseScreen();
+    LoadPalette(gMainMenuPalette, 0, 32);
+    ScanlineEffect_Stop();
+    REG_BG0HOFS = 0;
+    REG_BG0VOFS = 0;
+    REG_BG1HOFS = 0;
+    REG_BG1VOFS = 0;
+    REG_BG2HOFS = 0;
+    REG_BG2VOFS = 0;
+    REG_WIN0H = 0;
+    REG_WIN0V = 0;
+    REG_WININ = 0;
+    REG_WINOUT = 0;
+    REG_BLDCNT = 0;
+    REG_BLDALPHA = 0;
+    REG_BLDY = 0;
+
+    REG_DISPCNT = DISPCNT_MODE_0
+                | DISPCNT_OBJ_1D_MAP
+                | DISPCNT_BG0_ON
+                | DISPCNT_OBJ_ON;
+
+    taskId = CreateTask(Task_DifficultyMenuDraw, 0);
+    gTasks[taskId].data[0] = GetDifficultyMode();
+    SetMainCallback2(CB2_MainMenu);
+}
+
+static void Task_DifficultyMenuDraw(u8 taskId)
+{
+    u8 currentMode;
+
+    if (gPaletteFade.active)
+        return;
+
+    currentMode = gTasks[taskId].data[0];
+    Menu_DrawStdWindowFrame(4, 4, 25, 11);
+    Menu_PrintText(gDifficultyMenuString_Title, 5, 5);
+    Menu_PrintItems(5, 7, ARRAY_COUNT(sDifficultyMenuActions), sDifficultyMenuActions);
+    InitMenu(0, 5, 7, ARRAY_COUNT(sDifficultyMenuActions), currentMode, 5);
+    gTasks[taskId].func = Task_DifficultyMenuProcessInput;
+}
+
+static void Task_DifficultyMenuProcessInput(u8 taskId)
+{
+    s8 selection = Menu_ProcessInputNoWrap_();
+
+    switch (selection)
+    {
+    case 0:
+    case 1:
+    case 2:
+        PlaySE(SE_SELECT);
+        SetDifficultyMode(selection);
+        Menu_DestroyCursor();
+        BeginNormalPaletteFade(0xFFFFFFFF, 0, 0, 16, RGB(0, 0, 0));
+        gTasks[taskId].func = Task_DifficultyMenuFadeOut;
+        break;
+    case -1:
+        PlaySE(SE_SELECT);
+        Menu_DestroyCursor();
+        BeginNormalPaletteFade(0xFFFFFFFF, 0, 0, 16, RGB(0, 0, 0));
+        gTasks[taskId].func = Task_DifficultyMenuFadeOut;
+        break;
+    }
+}
+
+static void Task_DifficultyMenuFadeOut(u8 taskId)
+{
+    if (!gPaletteFade.active)
+    {
+        if (gSaveFileStatus == SAVE_STATUS_OK && gMain.savedCallback == CB2_InitMainMenu)
+            Save_WriteData(SAVE_NORMAL);
+
+        SetMainCallback2((MainCallback)gMain.savedCallback);
         DestroyTask(taskId);
     }
 }
@@ -614,10 +731,13 @@ void HighlightCurrentMenuItem(u8 layout, u8 menuItem)
         {
         case 0:
         default:
-            REG_WIN0V = WIN_RANGE(1, 31);
+            REG_WIN0V = WIN_RANGE(1, 23);
             break;
         case 1:
-            REG_WIN0V = WIN_RANGE(33, 63);
+            REG_WIN0V = WIN_RANGE(25, 47);
+            break;
+        case 2:
+            REG_WIN0V = WIN_RANGE(49, 71);
             break;
         }
         break;
@@ -626,13 +746,16 @@ void HighlightCurrentMenuItem(u8 layout, u8 menuItem)
         {
         case 0:
         default:
-            REG_WIN0V = WIN_RANGE(1, 63);
+            REG_WIN0V = WIN_RANGE(1, 23);
             break;
         case 1:
-            REG_WIN0V = WIN_RANGE(65, 95);
+            REG_WIN0V = WIN_RANGE(25, 47);
             break;
         case 2:
-            REG_WIN0V = WIN_RANGE(97, 127);
+            REG_WIN0V = WIN_RANGE(49, 71);
+            break;
+        case 3:
+            REG_WIN0V = WIN_RANGE(73, 95);
             break;
         }
         break;
@@ -641,16 +764,19 @@ void HighlightCurrentMenuItem(u8 layout, u8 menuItem)
         {
         case 0:
         default:
-            REG_WIN0V = WIN_RANGE(1, 63);
+            REG_WIN0V = WIN_RANGE(1, 23);
             break;
         case 1:
-            REG_WIN0V = WIN_RANGE(65, 95);
+            REG_WIN0V = WIN_RANGE(25, 47);
             break;
         case 2:
-            REG_WIN0V = WIN_RANGE(97, 127);
+            REG_WIN0V = WIN_RANGE(49, 71);
             break;
         case 3:
-            REG_WIN0V = WIN_RANGE(129, 159);
+            REG_WIN0V = WIN_RANGE(73, 95);
+            break;
+        case 4:
+            REG_WIN0V = WIN_RANGE(97, 119);
             break;
         }
         break;
@@ -672,60 +798,6 @@ void PrintMainMenuItem(const u8 *text, u8 left, u8 top)
     buffer[29] = EOS;
 
     Menu_PrintText(buffer, left, top);
-}
-
-void PrintSaveFileInfo(void)
-{
-    PrintPlayerName();
-    PrintPokedexCount();
-    PrintPlayTime();
-    PrintBadgeCount();
-}
-
-void PrintPlayerName(void)
-{
-    Menu_PrintText(gMainMenuString_Player, 2, 3);
-    Menu_PrintText(gSaveBlock2.playerName, 9, 3);
-}
-
-void PrintPlayTime(void)
-{
-    u8 playTime[16];
-    u8 alignedPlayTime[32];
-
-#if defined(ENGLISH)
-    Menu_PrintText(gMainMenuString_Time, 16, 3);
-    FormatPlayTime(playTime, gSaveBlock2.playTimeHours, gSaveBlock2.playTimeMinutes, 1);
-    AlignStringInMenuWindow(alignedPlayTime, playTime, 48, 1);
-    Menu_PrintText(alignedPlayTime, 22, 3);
-#elif defined(GERMAN)
-    Menu_PrintTextPixelCoords(gMainMenuString_Time, 124, 24, TRUE);
-    FormatPlayTime(playTime, gSaveBlock2.playTimeHours, gSaveBlock2.playTimeMinutes, 1);
-    AlignStringInMenuWindow(alignedPlayTime, playTime, 40, 1);
-    Menu_PrintText(alignedPlayTime, 23, 3);
-#endif
-}
-
-void PrintPokedexCount(void)
-{
-    u8 buffer[16];
-
-    Menu_PrintText(gMainMenuString_Pokedex, 2, 5);
-    AlignInt1InMenuWindow(buffer, GetPokedexSeenCount(), 18, 0);
-    Menu_PrintText(buffer, 9, 5);
-}
-
-void PrintBadgeCount(void)
-{
-    u8 buffer[16];
-
-#if defined(ENGLISH)
-    Menu_PrintText(gMainMenuString_Badges, 16, 5);
-#elif defined(GERMAN)
-    Menu_PrintTextPixelCoords(gMainMenuString_Badges, 124, 40, TRUE);
-#endif
-    ConvertIntToDecimalString(buffer, GetBadgeCount());
-    Menu_PrintTextPixelCoords(buffer, 205, 40, 1);
 }
 
 #define tTrainerSpriteId data[2]
@@ -1314,8 +1386,9 @@ static void Task_NewGameSpeech33(u8 taskId)
 {
     if (!gPaletteFade.active)
     {
-        //We're finished setting up. Start the new game!
-        SetMainCallback2(CB2_NewGame);
+        //Choose a difficulty before starting the new game.
+        gMain.savedCallback = CB2_NewGame;
+        SetMainCallback2(CB2_InitDifficultyMenu);
         DestroyTask(taskId);
     }
 }

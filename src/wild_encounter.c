@@ -1,4 +1,5 @@
 #include "global.h"
+#include "difficulty.h"
 #include "wild_encounter.h"
 #include "constants/abilities.h"
 #include "battle_setup.h"
@@ -306,7 +307,7 @@ static u8 PickWildMonNature(void)
 static void CreateWildMon(u16 species, u8 b)
 {
     ZeroEnemyPartyMons();
-    CreateMonWithNature(&gEnemyParty[0], species, b, 0x20, PickWildMonNature());
+    CreateMonWithNature(&gEnemyParty[0], species, Difficulty_AdjustWildLevel(b), 0x20, PickWildMonNature());
 }
 
 static bool8 GenerateWildMon(const struct WildPokemonInfo *wildMonInfo, u8 area, bool8 checkRepel)

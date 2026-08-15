@@ -1,4 +1,5 @@
 #include "global.h"
+#include "difficulty.h"
 #include "battle_setup.h"
 #include "battle.h"
 #include "battle_transition.h"
@@ -745,10 +746,10 @@ static u16 GetSumOfPlayerPartyLevel(u8 numMons)
     return sum;
 }
 
-static u8 GetSumOfEnemyPartyLevel(u16 opponentId, u8 numMons)
+static u16 GetSumOfEnemyPartyLevel(u16 opponentId, u8 numMons)
 {
     u8 i;
-    u8 sum;
+    u16 sum;
     u32 count = numMons;
 
     if (gTrainers[opponentId].partySize < count)
@@ -763,7 +764,7 @@ static u8 GetSumOfEnemyPartyLevel(u16 opponentId, u8 numMons)
             const struct TrainerMonNoItemDefaultMoves *party;
             party = gTrainers[opponentId].party.NoItemDefaultMoves;
             for (i = 0; i < count; i++)
-                sum += party[i].level;
+                sum += Difficulty_AdjustTrainerLevel(party[i].level);
         }
         break;
     case F_TRAINER_PARTY_CUSTOM_MOVESET:
@@ -771,7 +772,7 @@ static u8 GetSumOfEnemyPartyLevel(u16 opponentId, u8 numMons)
             const struct TrainerMonNoItemCustomMoves *party;
             party = gTrainers[opponentId].party.NoItemCustomMoves;
             for (i = 0; i < count; i++)
-                sum += party[i].level;
+                sum += Difficulty_AdjustTrainerLevel(party[i].level);
         }
         break;
     case F_TRAINER_PARTY_HELD_ITEM:
@@ -779,7 +780,7 @@ static u8 GetSumOfEnemyPartyLevel(u16 opponentId, u8 numMons)
             const struct TrainerMonItemDefaultMoves *party;
             party = gTrainers[opponentId].party.ItemDefaultMoves;
             for (i = 0; i < count; i++)
-                sum += party[i].level;
+                sum += Difficulty_AdjustTrainerLevel(party[i].level);
         }
         break;
     case F_TRAINER_PARTY_CUSTOM_MOVESET | F_TRAINER_PARTY_HELD_ITEM:
@@ -787,7 +788,7 @@ static u8 GetSumOfEnemyPartyLevel(u16 opponentId, u8 numMons)
             const struct TrainerMonItemCustomMoves *party;
             party = gTrainers[opponentId].party.ItemCustomMoves;
             for (i = 0; i < count; i++)
-                sum += party[i].level;
+                sum += Difficulty_AdjustTrainerLevel(party[i].level);
         }
         break;
     }
@@ -812,8 +813,8 @@ static u8 GetTrainerBattleTransition(void)
     const struct Trainer *trainer;
     u8 minPartyCount;
     u8 transitionType;
-    u8 enemyLevel;
-    u8 playerLevel;
+    u16 enemyLevel;
+    u16 playerLevel;
 
     if (gTrainerBattleOpponent == SECRET_BASE_OPPONENT)
         return B_TRANSITION_STEVEN;

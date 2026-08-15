@@ -1,4 +1,5 @@
 #include "global.h"
+#include "difficulty.h"
 #include "battle_tower.h"
 #include "battle.h"
 #include "battle_setup.h"
@@ -842,6 +843,9 @@ void FillBattleTowerTrainerParty(void)
             chosenMonIndices[partyIndex] = battleMonIndex;
 
             // Place the chosen pokemon into the trainer's party.
+            level = Difficulty_AdjustTrainerLevel(level);
+            fixedIV = Difficulty_AdjustTrainerFixedIV(fixedIV);
+
             CreateMonWithEVSpread(
                 &gEnemyParty[partyIndex],
                 battleTowerMons[battleMonIndex].species,

@@ -1,4 +1,5 @@
 #include "global.h"
+#include "difficulty.h"
 #include "data2.h"
 #include "constants/abilities.h"
 #include "constants/items.h"
@@ -1586,14 +1587,17 @@ void sub_803ADE8(struct Pokemon *mon, struct UnknownPokemonStruct *src)
     u8 nickname[POKEMON_NAME_LENGTH + 1];
     u8 language;
     u8 value;
+    u8 level = Difficulty_AdjustTrainerLevel(src->level);
+    u8 fixedIV = Difficulty_AdjustTrainerFixedIV(0);
+    u16 heldItem = Difficulty_GetTrainerHeldItem(src->species, src->heldItem);
 
-    CreateMon(mon, src->species, src->level, 0, 1, src->personality, 1, src->otId);
+    CreateMon(mon, src->species, level, fixedIV, 1, src->personality, 1, src->otId);
 
     for (i = 0; i < 4; i++)
         SetMonMoveSlot(mon, src->moves[i], i);
 
     SetMonData(mon, MON_DATA_PP_BONUSES, &src->ppBonuses);
-    SetMonData(mon, MON_DATA_HELD_ITEM, &src->heldItem);
+    SetMonData(mon, MON_DATA_HELD_ITEM, &heldItem);
 
     StringCopy(nickname, src->nickname);
 

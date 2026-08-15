@@ -23,6 +23,7 @@ extern const u8 gSystemText_Pokemon2[];
 // main menu text
 extern const u8 gMainMenuString_NewGame[];
 extern const u8 gMainMenuString_Continue[];
+extern const u8 gMainMenuString_Difficulty[];
 extern const u8 gMainMenuString_Option[];
 extern const u8 gMainMenuString_MysteryEvents[];
 
@@ -50,6 +51,12 @@ extern const u8 gMainMenuString_Badges[];
 extern const u8 gBirchText_Boy[];
 extern const u8 gBirchText_Girl[];
 extern const u8 gBirchText_NewName[];
+
+// difficulty text
+extern const u8 gDifficultyMenuString_Title[];
+extern const u8 gDifficultyMenuString_Easy[];
+extern const u8 gDifficultyMenuString_Medium[];
+extern const u8 gDifficultyMenuString_Hard[];
 
 extern const u8 gDefaultBoyName1[];
 extern const u8 gDefaultBoyName2[];

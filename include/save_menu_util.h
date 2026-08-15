@@ -6,6 +6,7 @@ void HandleCloseSaveWindow(u16 left, u16 top);
 u8 IsResizeSaveWindowEnabled(void);
 void PrintSavePlayerName(s16 x, s16 y);
 void PrintSaveMapName(s16 x, s16 y);
+void PrintSaveDifficulty(s16 x, s16 y);
 void PrintSaveBadges(s16 x, s16 y);
 void PrintSavePokedexCount(s16 x, s16 y);
 void PrintSavePlayTime(s16 x, s16 y);

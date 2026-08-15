@@ -1,10 +1,12 @@
 #include "global.h"
+#include "difficulty.h"
 #include "save_menu_util.h"
 #include "event_data.h"
 #include "menu.h"
 #include "pokedex.h"
 #include "region_map.h"
 #include "string_util.h"
+#include "strings.h"
 #include "strings2.h"
 
 EWRAM_DATA struct PokemonStorage gPokemonStorage = {0};
@@ -20,21 +22,23 @@ void HandleDrawSaveWindowInfo(s16 left, s16 top)
     if (FlagGet(FLAG_SYS_POKEDEX_GET))
     {
         // print info + dex information.
-        Menu_DrawStdWindowFrame(left, top, left + width, top + 11);
+        Menu_DrawStdWindowFrame(left, top, left + width, top + 13);
         PrintSaveMapName(++left, ++top); // MAP NAME
         PrintSavePlayerName(left, top + 2); // PLAYER
-        PrintSaveBadges(left, top + 4); // BADGES
-        PrintSavePokedexCount(left, top + 6); // POKEDEX
-        PrintSavePlayTime(left, top + 8); // PLAY TIME
+        PrintSaveDifficulty(left, top + 4); // DIFFICULTY
+        PrintSaveBadges(left, top + 6); // BADGES
+        PrintSavePokedexCount(left, top + 8); // POKEDEX
+        PrintSavePlayTime(left, top + 10); // PLAY TIME
     }
     else
     {
         // print everything besides dex.
-        Menu_DrawStdWindowFrame(left, top, left + width, top + 9);
+        Menu_DrawStdWindowFrame(left, top, left + width, top + 11);
         PrintSaveMapName(++left, ++top); // MAP NAME
         PrintSavePlayerName(left, top + 2); // PLAYER
-        PrintSaveBadges(left, top + 4); // BADGES
-        PrintSavePlayTime(left, top + 6); // PLAY TIME
+        PrintSaveDifficulty(left, top + 4); // DIFFICULTY
+        PrintSaveBadges(left, top + 6); // BADGES
+        PrintSavePlayTime(left, top + 8); // PLAY TIME
     }
 }
 
@@ -47,9 +51,9 @@ void HandleCloseSaveWindow(u16 left, u16 top)
         width = 13;
 
     if (FlagGet(FLAG_SYS_POKEDEX_GET))
-        Menu_EraseWindowRect(left, top, left + width, top + 11);
+        Menu_EraseWindowRect(left, top, left + width, top + 13);
     else
-        Menu_EraseWindowRect(left, top, left + width, top + 9);
+        Menu_EraseWindowRect(left, top, left + width, top + 11);
 }
 
 /*
@@ -74,6 +78,30 @@ void PrintSaveMapName(s16 x, s16 y)
 
     CopyMapName(name, gMapHeader.regionMapSectionId);
     Menu_PrintText(name, x, y);
+}
+
+void PrintSaveDifficulty(s16 x, s16 y)
+{
+    const u8 *difficultyText;
+    u8 mode = GetDifficultyMode();
+
+    Menu_PrintText(gMainMenuString_Difficulty, x, y);
+
+    switch (mode)
+    {
+    case DIFFICULTY_EASY:
+        difficultyText = gDifficultyMenuString_Easy;
+        break;
+    case DIFFICULTY_HARD:
+        difficultyText = gDifficultyMenuString_Hard;
+        break;
+    case DIFFICULTY_MEDIUM:
+    default:
+        difficultyText = gDifficultyMenuString_Medium;
+        break;
+    }
+
+    MenuPrint_RightAligned(difficultyText, x + 12, y);
 }
 
 void PrintSaveBadges(s16 x, s16 y)
