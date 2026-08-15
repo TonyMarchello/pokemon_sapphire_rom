@@ -1,4 +1,6 @@
 #include "global.h"
+#include "difficulty.h"
+#include "main_menu.h"
 #include "new_game.h"
 #include "battle_records.h"
 #include "berry.h"
@@ -11,6 +13,7 @@
 #include "dewford_trend.h"
 #include "easy_chat.h"
 #include "event_data.h"
+#include "follow_mon.h"
 #include "field_specials.h"
 #include "item_menu.h"
 #include "lottery_corner.h"
@@ -87,6 +90,7 @@ void SetDefaultOptions(void)
     gSaveBlock2.optionsBattleStyle = OPTIONS_BATTLE_STYLE_SHIFT;
     gSaveBlock2.optionsBattleSceneOff = FALSE;
     gSaveBlock2.regionMapZoom = FALSE;
+    gSaveBlock2.difficultyMode = DIFFICULTY_MEDIUM;
 }
 
 void ClearPokedexFlags(void)
@@ -201,6 +205,7 @@ void NewGameInitData(void)
     InitDewfordTrend();
     ResetFanClub();
     ResetLotteryCorner();
+    FollowMon_Init();
     WarpToTruck();
     ScriptContext2_RunNewScript(EventScript_ResetAllMapFlags);
 }

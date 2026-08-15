@@ -4,6 +4,7 @@
 #include "event_object_movement.h"
 #include "field_effect.h"
 #include "field_effect_helpers.h"
+#include "follow_mon.h"
 #include "field_player_avatar.h"
 #include "fieldmap.h"
 #include "main.h"
@@ -283,6 +284,8 @@ void player_step(u8 direction, u16 newKeys, u16 heldKeys)
             }
         }
     }
+
+    FollowMon_OnPlayerStep(direction, newKeys, heldKeys);
 }
 
 static bool8 sub_8058854(struct ObjectEvent *playerObjEvent, u8 direction)
@@ -1141,6 +1144,7 @@ void SetPlayerAvatarStateMask(u8 flags)
 {
     gPlayerAvatar.flags &= (PLAYER_AVATAR_FLAG_DASH | PLAYER_AVATAR_FLAG_6 | PLAYER_AVATAR_FLAG_5);
     gPlayerAvatar.flags |= flags;
+    FollowMon_OnAvatarStateChange();
 }
 
 static u8 GetPlayerAvatarStateTransitionByGraphicsId(u8 a, u8 gender)

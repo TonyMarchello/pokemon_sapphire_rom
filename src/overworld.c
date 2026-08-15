@@ -16,6 +16,7 @@
 #include "field_effect.h"
 #include "field_fadetransition.h"
 #include "field_message_box.h"
+#include "follow_mon.h"
 #include "field_player_avatar.h"
 #include "field_screen_effect.h"
 #include "field_special_scene.h"
@@ -1838,6 +1839,7 @@ void sub_8054D90(void)
     gTotalCameraPixelOffsetY = 0;
     ResetObjectEvents();
     TrySpawnObjectEvents(0, 0);
+    FollowMon_OnMapLoad();
     TryRunOnWarpIntoMapScript();
 }
 
@@ -1854,6 +1856,7 @@ void mli4_mapscripts_and_other(void)
     SetPlayerAvatarTransitionFlags(initialPlayerAvatarState->transitionFlags);
     ResetInitialPlayerAvatarState();
     TrySpawnObjectEvents(0, 0);
+    FollowMon_OnMapLoad();
     ResetBerryTreeSparkleFlags();
     TryRunOnWarpIntoMapScript();
 }

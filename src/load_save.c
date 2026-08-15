@@ -2,6 +2,7 @@
 #include "gba/flash_internal.h"
 #include "load_save.h"
 #include "main.h"
+#include "follow_mon.h"
 #include "pokemon.h"
 #include "overworld.h"
 
@@ -107,6 +108,7 @@ void LoadSerializedGame(void)
 {
     LoadPlayerParty();
     LoadObjectEvents();
+    FollowMon_Init();
 }
 
 void LoadPlayerBag(void)
