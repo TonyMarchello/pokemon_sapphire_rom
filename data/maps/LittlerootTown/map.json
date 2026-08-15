@@ -5,15 +5,15 @@
   "music": "MUS_LITTLEROOT",
   "region_map_section": "MAPSEC_LITTLEROOT_TOWN",
   "requires_flash": false,
-  "weather": "WEATHER_SUNNY",
+  "weather": "WEATHER_RAIN_MED",
   "map_type": "MAP_TYPE_TOWN",
   "show_map_name": true,
   "battle_scene": "MAP_BATTLE_SCENE_NORMAL",
   "connections": [
     {
-      "direction": "up",
+      "map": "MAP_ROUTE101",
       "offset": 0,
-      "map": "MAP_ROUTE101"
+      "direction": "up"
     }
   ],
   "object_events": [
@@ -116,6 +116,13 @@
       "y": 16,
       "elevation": 0,
       "dest_map": "MAP_LITTLEROOT_TOWN_PROFESSOR_BIRCHS_LAB",
+      "dest_warp_id": "0"
+    },
+    {
+      "x": 23,
+      "y": 12,
+      "elevation": 0,
+      "dest_map": "MAP_LITTLEROOT_TOWN_KANYES_HOME",
       "dest_warp_id": "0"
     }
   ],
@@ -234,6 +241,14 @@
       "elevation": 3,
       "player_facing_dir": "BG_EVENT_PLAYER_FACING_ANY",
       "script": "LittlerootTown_EventScript_14D834"
+    },
+    {
+      "type": "sign",
+      "x": 25,
+      "y": 12,
+      "elevation": 0,
+      "player_facing_dir": "BG_EVENT_PLAYER_FACING_ANY",
+      "script": "LittlerootTown_EventScript_14D808"
     }
   ]
 }
