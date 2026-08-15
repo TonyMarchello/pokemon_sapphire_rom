@@ -20,6 +20,7 @@ jobs:
         uses: actions/checkout@master
 
       - name: Checkout DE
+        if: ${{ github.repository_owner == 'pret' }}
         uses: actions/checkout@master
         with:
           path: 'build_de'
@@ -93,16 +94,19 @@ jobs:
           fi
 
       - name: Setup German
+        if: ${{ github.repository_owner == 'pret' }}
         run: sh de_before.sh
         working-directory: ./build_de
 
       - name: German Ruby
+        if: ${{ github.repository_owner == 'pret' }}
         env:
           GAME_LANGUAGE: GERMAN
         run: make -j${nproc} all syms
         working-directory: ./build_de
 
       - name: German Ruby Debug
+        if: ${{ github.repository_owner == 'pret' }}
         env:
           GAME_LANGUAGE: GERMAN
           DEBUG: 1
@@ -110,6 +114,7 @@ jobs:
         working-directory: ./build_de
 
       - name: German Ruby rev1
+        if: ${{ github.repository_owner == 'pret' }}
         env:
           GAME_LANGUAGE: GERMAN
           GAME_REVISION: 1
@@ -117,6 +122,7 @@ jobs:
         working-directory: ./build_de
 
       - name: German Sapphire
+        if: ${{ github.repository_owner == 'pret' }}
         env:
           GAME_LANGUAGE: GERMAN
           GAME_VERSION: SAPPHIRE
@@ -124,6 +130,7 @@ jobs:
         working-directory: ./build_de
 
       - name: German Sapphire rev1
+        if: ${{ github.repository_owner == 'pret' }}
         env:
           GAME_LANGUAGE: GERMAN
           GAME_VERSION: SAPPHIRE
