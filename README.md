@@ -25,4 +25,3 @@ For setup and toolchain requirements, see [INSTALL.md](INSTALL.md).
 - [pokeheartgold](https://github.com/pret/pokeheartgold) for behavioral and structural reference when designing the overworld follower system.
 
 The MIT license in this repository applies to the original hack modifications and documentation. Third-party code, tools, assets, and their associated licenses remain subject to their respective upstream terms.
-diff --git a/LICENSE b/LICENSE
